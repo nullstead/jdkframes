@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zxx">
+<head>
+	<title>jdkframes | The Photo Gallery</title>
+	<meta charset="UTF-8">
+	<meta name="description" content="Boto Photo Studio HTML Template">
+	<meta name="keywords" content="photo, html">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Stylesheets -->
+	<link rel="stylesheet" href="css/bootstrap.min.css"/>
+	<link rel="stylesheet" href="css/font-awesome.min.css"/>
+	<link rel="stylesheet" href="css/slicknav.min.css"/>
+	<link rel="stylesheet" href="css/fresco.css"/>
+	<link rel="stylesheet" href="css/slick.css"/>
+
+	<!-- Main Stylesheets -->
+	<link rel="stylesheet" href="css/style.css"/>
+	<link rel="icon" type="image/png" href="img/favicon.png">
+
+
+	<style></style>
+
+</head>
+<body>
+	<!-- Page Preloder  -->
+	<div id="preloder">
+		<div class="loader"></div>
+	</div>
+
+	<!-- Header Section -->
+    <%- include('../partials/header.ejs') %>
+	<!-- Header Section end -->
+
+    <!--Main content-->
+		<!--Injected content-->
+        <%- body %>
+    <!--Main content-->
+
+	<!-- Footer Section -->
+	<%- include('../partials/footer.ejs') %>
+	<!-- Footer Section end -->
+
+	<!--====== Javascripts & Jquery ======-->
+	<script src="js/vendor/jquery-3.2.1.min.js"></script>
+	<script src="js/jquery.slicknav.min.js"></script>
+	<script src="js/slick.min.js"></script>
+	<script src="js/fresco.min.js"></script>
+	<script src="js/main.js"></script>
+
+
+	
+
+	<script>
+
+		document.getElementById("upload-btn-div").innerHTML = `
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12 text-center mt-5 mb-3">
+						<h2 class="section-title">Add New Photo</h2>
+					</div>
+				</div>
+				<div class="row justify-content-center">
+					<div class="col-md-8">
+						<div class="upload-area">
+							<div class="file-upload-wrapper text-center">
+								<label for="file-upload" class="custom-file-upload">
+								<i class="fa fa-cloud-upload"></i> Select Image
+								</label>
+								<input id="file-upload" type="file" accept="image/*" />
+							</div>
+						<div id="image-preview-container" class="mt-4 text-center">
+						<!-- Preview will appear here -->
+						</div>
+							<div class="upload-actions mt-4 text-center">
+								<input type="text" name="title" class="site-input" placeholder="Give a title" required></input>
+							</div>
+							<div class="upload-actions mt-4 text-center">
+								<textarea name="description" class="site-input" placeholder="Provide a description..." cols="22" required></textarea>
+							</div>
+							<div class="upload-actions mt-4 text-center">
+								<button id="upload-button" class="site-btn" disabled>Upload Photo</button>
+								<div id="upload-status" style="display: none;">
+									<p>Uploading... Please wait.</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			`;
+
+			$(document).ready(function() {
+				const fileUpload = document.getElementById('file-upload');
+				const previewContainer = document.getElementById('image-preview-container');
+				const uploadButton = document.getElementById('upload-button');
+				const uploadStatus = document.getElementById('upload-status');
+				
+				// Function to check if all fields are filled and enable/disable button accordingly
+				function checkFormValidity() {
+					const hasFile = fileUpload.files.length > 0;
+					const titleInput = document.querySelector('input[name="title"]');
+					const descriptionTextarea = document.querySelector('textarea[name="description"]');
+					
+					const hasTitle = titleInput && titleInput.value.trim() !== '';
+					const hasDescription = descriptionTextarea && descriptionTextarea.value.trim() !== '';
+					
+					// Enable button only if all three conditions are met
+					uploadButton.disabled = !(hasFile && hasTitle && hasDescription);
+				}
+				
+				// Handle file upload
+				if (fileUpload) {
+					fileUpload.addEventListener('change', function() {
+					const file = this.files[0];
+
+					if (file) {
+						const reader = new FileReader();
+
+						reader.addEventListener('load', function() {
+						previewContainer.innerHTML = `<img src="${this.result}" alt="Image Preview" />`;
+						checkFormValidity();
+						});
+
+						reader.readAsDataURL(file);
+					} else {
+						previewContainer.innerHTML = '';
+						uploadButton.disabled = true;
+					}
+					});
+				}
+				
+				// Add event listeners to input and textarea to check validity on input
+				document.addEventListener('input', function(event) {
+					if (event.target.matches('input[name="title"]') || 
+						event.target.matches('textarea[name="description"]')) {
+					checkFormValidity();
+					}
+				});
+
+				if (uploadButton) {
+					uploadButton.addEventListener('click', async function() {
+					const file = fileUpload.files[0];
+					const titleInput = document.querySelector('input[name="title"]');
+					const descriptionTextarea = document.querySelector('textarea[name="description"]');
+					
+					// These checks are redundant now but kept for safety
+					if (!file || !titleInput.value.trim() || !descriptionTextarea.value.trim()) {
+						!file && alert('Please select an image first');
+						!titleInput.value.trim() && alert('Please enter a title');
+						!descriptionTextarea.value.trim() && alert('Please enter a description');
+						return;
+					}
+
+					const formData = new FormData();
+					formData.append('image', file);
+					formData.append('title', titleInput.value);
+					formData.append('description', descriptionTextarea.value);
+
+					try {
+						uploadButton.disabled = true;
+						uploadStatus.style.display = 'block';
+
+						const response = await fetch('/', {
+						method: 'POST',
+						body: formData
+						});
+
+						const result = await response.json();
+
+						if (response.ok) {
+						alert(`Image uploaded successfully!`);
+						location.reload();
+						} else {
+						alert(`Error: ${result.error || 'Unknown error'}`);
+						}
+
+					} catch (error) {
+						alert(`Error: ${error.message}`);
+					} finally {
+						uploadButton.disabled = false;
+						uploadStatus.style.display = 'none';
+					}
+					});
+				}
+		});
+
+		// Delete image function
+		async function deleteImage(event) {
+			const imageKey = event.target.getAttribute('data-key');
+			
+			if (imageKey) {
+				
+				if (confirm('Are you sure you want to delete this image?')) {
+
+				try {
+					const response = await fetch(`/${imageKey}`, {
+					method: 'DELETE'
+					});
+
+					const result = await response.json();
+
+					if (response.ok) {
+						alert('Image deleted successfully!');
+						location.reload();
+					} else {
+						alert(`Error: ${result.error || 'Unknown error'}`);
+					}
+				} catch (error) {
+					alert(`Error: ${error.message}`);
+					location.reload();
+				}
+				}
+			}
+		}
+
+	</script>
+
+	</body>
+</html>

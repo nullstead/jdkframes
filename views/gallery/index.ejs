@@ -1,0 +1,29 @@
+
+<!-- Hero Section -->
+<section class="hero__section">
+    <div class="hero-slider">
+
+        <% images.forEach(image => { %>
+            <div class="slide-item">
+                <a class="fresco" href="img/hero-slider/5.jpg" data-fresco-group="projects">
+                    <img src="<%= image.url %>" alt="">
+                </a>	
+            </div>
+        <% });%>
+
+    </div>
+
+    <div class="hero-text-slider">
+        <% images.forEach(image => { %>
+        <div class="text-item">
+            <p class="btn-danger p-2" style="width: fit-content; margin: auto; border-radius: 50%;" data-key="<%= image.key %>" onclick="deleteImage(event)">Delete</p>
+        </div>
+        <% });%>
+    </div>
+
+</section>
+<!-- Hero Section end -->
+
+<div id="upload-btn-div">
+    
+</div>
