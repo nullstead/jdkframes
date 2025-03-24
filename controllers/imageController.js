@@ -1,6 +1,7 @@
 import { uploadImage, deleteImage, listImages } from '../models/imageModel.js';
 
 export const uploadImageController = async (req, res, next) => {
+  
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
@@ -20,7 +21,10 @@ export const uploadImageController = async (req, res, next) => {
   }
 };
 
+
+
 export const deleteImageController = async (req, res, next) => {
+
   try {
     const { key } = req.params;
     
@@ -33,13 +37,18 @@ export const deleteImageController = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+
 };
 
+
+
 export const listImagesController = async (req, res, next) => {
+
   try {
     const images = await listImages();
     res.render('gallery/index', { images });
   } catch (error) {
     next(error);
   }
+
 };
