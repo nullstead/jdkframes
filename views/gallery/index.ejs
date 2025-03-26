@@ -16,10 +16,20 @@
     <div class="hero-text-slider">
         <% images.forEach(image => { %>
         <div class="text-item">
-            <p class="btn-danger p-2" style="width: fit-content; margin: auto; border-radius: 50%;" data-key="<%= image.key %>" onclick="deleteImage(event)">Delete</p>
+            <p class="bg-dark px-3 py-3 text-white" style="width: fit-content; margin: auto; border-radius: 10px; "><%= image.description %></p>
         </div>
         <% });%>
     </div>
+
+    <div class="hero-text-slider">
+        <% images.forEach(image => { %>
+        <div class="text-item">
+          <p class="p-2 text-danger" style="width: fit-content; margin: auto; cursor: pointer;" title="delete image">
+            <span style="font-weight: bolder; font-size:xx-large" data-key="<%= image.key %>" onclick="deleteImage(event)">X</span>
+          </p>
+        </div>
+        <% }); %>
+      </div>
 
 </section>
 <!-- Hero Section end -->

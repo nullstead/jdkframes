@@ -2,7 +2,7 @@ import express from 'express';
 import { 
   uploadImageController, 
   deleteImageController, 
-  listImagesController 
+  getImagesController
 } from '../controllers/imageController.js';
 
 const router = express.Router();
@@ -18,7 +18,12 @@ router.post('/', (req, res, next) => {
 // DELETE /images/:key - Delete an image 
 router.delete('/:key', deleteImageController);
 
+// GET /images - List all images meta data from db
+router.get('/', getImagesController);
+
 // GET /images - List all images
-router.get('/', listImagesController);
+//router.get('/', listImagesController);
+
+
 
 export default router;
