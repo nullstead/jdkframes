@@ -1,48 +1,48 @@
-# name: Build and Push to ECR
+name: Build and Push to ECR
 
-# on:
-#   push:
-#     branches: [ main ]
+on:
+  push:
+    branches: [ main ]
 
-# jobs:
-#   build-and-push:
-#     name: Build and Push to ECR
-#     runs-on: ubuntu-latest
+jobs:
+  build-and-push:
+    name: Build and Push to ECR
+    runs-on: ubuntu-latest
     
-#     steps:
-#     - name: Checkout code
-#       uses: actions/checkout@v3
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
       
-#     - name: Configure AWS credentials
-#       uses: aws-actions/configure-aws-credentials@v1
-#       with:
-#         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#         aws-region: ${{ secrets.AWS_REGION }}
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
         
-#     - name: Login to Amazon ECR Public
-#       id: login-ecr-public
-#       uses: aws-actions/amazon-ecr-login@v1
-#       with:
-#         registry-type: public
+    - name: Login to Amazon ECR Public
+      id: login-ecr-public
+      uses: aws-actions/amazon-ecr-login@v1
+      with:
+        registry-type: public
         
-#     - name: Build, tag, and push image to Amazon ECR Public
-#       env:
-#         ECR_REGISTRY: public.ecr.aws/u1k7f1w4
-#         ECR_REPOSITORY: jdkframes-api
-#         IMAGE_TAG: first
-#       run: |
-#         # Build the Docker image
-#         docker build -t $ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
+    - name: Build, tag, and push image to Amazon ECR Public
+      env:
+        ECR_REGISTRY: public.ecr.aws/u1k7f1w4
+        ECR_REPOSITORY: jdkframes-mono
+        IMAGE_TAG: first
+      run: |
+        # Build the Docker image
+        docker build -t $ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
         
-#         # Tag the Docker image for ECR
-#         docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        # Tag the Docker image for ECR
+        docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         
-#         # Push the Docker image to ECR
-#         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        # Push the Docker image to ECR
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         
-#         # Tag with commit SHA for versioning
-#         docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_SHA::8}
-#         docker push $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_SHA::8}
+        # Tag with commit SHA for versioning
+        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_SHA::8}
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_SHA::8}
         
-#         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
