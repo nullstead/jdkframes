@@ -5,3 +5,4 @@ Dockerfile
 .gitignore
 .env
 .github
+task-definition-env.txt
