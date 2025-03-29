@@ -1,3 +1,4 @@
 node_modules
 .env
 task-definition-env.txt
+db-dump.sql

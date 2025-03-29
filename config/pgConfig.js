@@ -13,7 +13,10 @@ const DBPassword = process.env.DBPassword;
 const DatabaseURL = `postgres://${DBUsername}:${DBPassword}@${DBHost}:${DBPort}/${DBName}`;
 
 const pgClient = new Client({
-    connectionString: DatabaseURL
+    connectionString: DatabaseURL,
+    ssl: {
+      rejectUnauthorized: false // Should be true if there's a valid SSL certificate
+    }
 });
 
 try {
